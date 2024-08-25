@@ -80,41 +80,42 @@ pipeline {
             }
         }
         stage('Updating Deployment File and Creating Merge Request') {
-            environment {
-                GIT_REPO_NAME = "vulnerable_application"
-                GIT_USER_NAME = "Rajendra0609"
-                TARGET_BRANCH = "main" // or the branch you want to merge into
-                SOURCE_BRANCH = "dev/chow" // or the branch you're pushing changes to
-            }
-            steps {
-                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
-                    script {
-                        def releaseTag = "v0.${BUILD_NUMBER}.0"
-                        env.RELEASE_TAG = releaseTag // Export the variable to the shell
+    environment {
+        GIT_REPO_NAME = "vulnerable_application"
+        GIT_USER_NAME = "Rajendra0609"
+        TARGET_BRANCH = "main"
+        SOURCE_BRANCH = "dev/chow"
+    }
+    steps {
+        withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+            script {
+                def releaseTag = "v0.${BUILD_NUMBER}.0"
+                env.RELEASE_TAG = releaseTag // Export the variable to the shell
 
-                        sh '''
-                            git config user.email "rajendra.daggubati@gmail.com"
-                            git config user.name "Rajendra0609"
-                            BUILD_NUMBER=${BUILD_NUMBER}
-                            git tag -a ${RELEASE_TAG} -m "Release ${RELEASE_TAG}"
-                            git push --force https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} ${RELEASE_TAG}
-                        '''
-                    }
-                }
-                
-                // Create a merge request
-                httpRequest url: "https://api.github.com/repos/${GIT_USER_NAME}/${GIT_REPO_NAME}/pulls",
-                    authentication: 'Bearer ' + GITHUB_TOKEN,
-                    httpMode: 'POST',
-                    contentType: 'APPLICATION_JSON',
-                    requestBody: """{
-                        "title": "Update deployment Image to version ${BUILD_NUMBER}",
-                        "head": "${SOURCE_BRANCH}",
-                        "base": "${TARGET_BRANCH}",
-                        "body": "Automated merge request from Jenkins pipeline"
-                    }"""
+                sh '''
+                    git config user.email "rajendra.daggubati@gmail.com"
+                    git config user.name "Rajendra0609"
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    git tag -a ${RELEASE_TAG} -m "Release ${RELEASE_TAG}"
+                    git push --force https://${GITHUB_TOKEN}@github.com/${env.GIT_USER_NAME}/${env.GIT_REPO_NAME} ${env.SOURCE_BRANCH}
+                '''
             }
         }
+        
+        // Create a merge request
+        httpRequest url: "https://api.github.com/repos/${env.GIT_USER_NAME}/${env.GIT_REPO_NAME}/pulls",
+            authentication: 'Bearer ' + GITHUB_TOKEN,
+            httpMode: 'POST',
+            contentType: 'APPLICATION_JSON',
+            requestBody: """{
+                "title": "Update deployment Image to version ${BUILD_NUMBER}",
+                "head": "refs/heads/${env.SOURCE_BRANCH}",
+                "base": "${env.TARGET_BRANCH}",
+                "body": "Automated merge request from Jenkins pipeline"
+            }"""
+    }
+}
+            
         stage('Cleanup Workspace') {
             steps {
                 cleanWs()
