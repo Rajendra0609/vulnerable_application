@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('GIT SCM') {
             steps {
-                git branch: 'dev/chow', credentialsId: 'github', url: 'https://github.com/Rajendra0609/vulnerable_application.git'
+                sh 'ls'
             }
         }
         stage('OWASP FS SCAN') {
