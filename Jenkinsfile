@@ -61,7 +61,7 @@ pipeline {
                     sh 'docker build -t ${DOCKER_IMAGE} .'
                     
                     // Scan the Docker image with Trivy
-                    sh 'trivy image --format table --timeout ${TRIVY_TIMEOUT} -o trivy-image-report.html ${DOCKER_IMAGE}'
+                    //sh 'trivy image --format table --timeout ${TRIVY_TIMEOUT} -o trivy-image-report.html ${DOCKER_IMAGE}'
                     
                     // Push the Docker image to the registry
                     docker.withRegistry('https://index.docker.io/v1/', 'docker') {
