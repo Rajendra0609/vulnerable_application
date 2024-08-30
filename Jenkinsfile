@@ -115,6 +115,11 @@ pipeline {
                 "base": "${env.TARGET_BRANCH}",
                 "body": "Automated merge request from Jenkins pipeline"
             }"""
+
+        // Push changes to main branch
+        sh '''
+            git push origin ${TARGET_BRANCH}
+        '''
     }
 }
             
