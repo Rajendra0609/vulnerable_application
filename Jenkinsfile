@@ -73,9 +73,9 @@ pipeline {
                     sh 'docker rmi ${DOCKER_IMAGE}'
                     
                     // Archive the Trivy report
-                    def reportPath = "${env.WORKSPACE}/trivy-image-report.html"
-                    echo "Trivy report path: ${reportPath}"
-                    archiveArtifacts artifacts: 'trivy-image-report.html'
+                    //def reportPath = "${env.WORKSPACE}/trivy-image-report.html"
+                    //echo "Trivy report path: ${reportPath}"
+                    //archiveArtifacts artifacts: 'trivy-image-report.html'
                 }
             }
         }
