@@ -97,7 +97,9 @@ pipeline {
                     git config user.name "Rajendra0609"
                     BUILD_NUMBER=${BUILD_NUMBER}
                     git tag -a ${RELEASE_TAG} -m "Release ${RELEASE_TAG}"
-                    git push --force https://${GITHUB_TOKEN}@github.com/${env.GIT_USER_NAME}/${env.GIT_REPO_NAME} ${env.SOURCE_BRANCH}
+                    git checkout ${TARGET_BRANCH}
+                    git merge ${SOURCE_BRANCH}
+                    git status
                 '''
             }
         }
